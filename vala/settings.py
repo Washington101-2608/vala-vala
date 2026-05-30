@@ -82,7 +82,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+CSRF_TRUSTED_ORIGINS = [
+    'https://vala-vala-production.up.railway.app',
+]
 
+ALLOWED_HOSTS = ['vala-vala-production.up.railway.app', 'localhost', '127.0.0.1']
 
 LANGUAGE_CODE = 'en-us'
 
