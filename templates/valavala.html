@@ -227,21 +227,24 @@ footer{padding:60px 48px 36px;border-top:1px solid rgba(200,169,110,.1)}
         <a href="#about" class="btn-ghost">Our Story</a>
       </div>
     </div>
-    <div class="hero-images">
       <div class="hero-img-big">
-        <img src="" alt="Vala Vala Drop" loading="lazy" style="background:#1e1b18">
-        <span class="hero-img-label">New Drop</span>
-      </div>
-      <div class="hero-img-small">
-        <img src="" alt="Vala Vala Tote" loading="lazy" style="background:#1e1b18">
-        <span class="hero-img-label">Tote Bag</span>
-      </div>
-      <div class="hero-img-small">
-        <img src="" alt="Vala Vala Cap" loading="lazy" style="background:#1e1b18">
-        <span class="hero-img-label">Trucker Cap</span>
-      </div>
-    </div>
-  </div>
+  {% if hero_products %}
+  <img src="{{ hero_products.0.image.url }}" alt="Vala Vala Drop" loading="lazy">
+  {% endif %}
+  <span class="hero-img-label">New Drop</span>
+</div>
+<div class="hero-img-small">
+  {% if hero_products|length > 1 %}
+  <img src="{{ hero_products.1.image.url }}" alt="Vala Vala Tote" loading="lazy">
+  {% endif %}
+  <span class="hero-img-label">Tote Bag</span>
+</div>
+<div class="hero-img-small">
+  {% if hero_products|length > 2 %}
+  <img src="{{ hero_products.2.image.url }}" alt="Vala Vala Cap" loading="lazy">
+  {% endif %}
+  <span class="hero-img-label">Trucker Cap</span>
+</div>
 </section>
 
 <div class="marquee-wrap">

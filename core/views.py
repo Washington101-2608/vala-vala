@@ -34,6 +34,11 @@ class RegisterView(APIView):
 @ensure_csrf_cookie
 def Index(request):
     return render(request,template_name = 'valavala.html')
+@ensure_csrf_cookie
+def Index(request):
+    from core.models import Product
+    products = Product.objects.all()[:3]
+    return render(request, template_name='valavala.html', context={'hero_products': products})
 
 
 @login_required
