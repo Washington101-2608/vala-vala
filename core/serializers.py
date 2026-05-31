@@ -5,11 +5,12 @@ class ProductSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
     def get_image(self, obj):
-        request = self.context.get('request')
         if obj.image:
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+            url = obj.image.url
+            # fix double /media/media/ issue
+            if url.startswith('/media/media/'):
+                url = url.replace('/media/media/', '/media/', 1)
+            return url
         return ''
 
     class Meta:
