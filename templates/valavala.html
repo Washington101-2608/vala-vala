@@ -780,7 +780,7 @@ function addMsg(role,text,prods){
     html+='<div class="chat-products">';
     prods.forEach(function(p){
       html+='<div class="chat-product-card" onclick="addToCart('+p.id+')">'
-        +'<img src="data:image/jpeg;base64,'+IMGS[p.img]+'" alt="'+p.name+'">'
+       +'<img src="'+p.image+'" alt="'+p.name+'">'
         +'<div class="chat-product-card-info">'
         +'<div class="chat-product-card-name">'+p.name+'</div>'
         +'<div class="chat-product-card-price">MWK '+p.price.toLocaleString()+'</div>'
