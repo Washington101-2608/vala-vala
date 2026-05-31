@@ -653,7 +653,7 @@ BRAND INFO:
 - Based in Malawi, ships nationwide
 - Payment: WhatsApp ordering (customer adds to cart, clicks "Order via WhatsApp")
 - Delivery: 1-3 business days within Malawi
-- WhatsApp: +265 999 000 000
+- WhatsApp: +265896907972
 
 CURRENT PRODUCTS & PRICES:
 TEES:
@@ -693,67 +693,41 @@ function sendAI(userText){
 }
 
 function getReply(msg){
-  var m=msg.toLowerCase();
-  var p=products;
-  // Specific: red hoodie
-  if((m.includes('hoodie')||m.includes('hood'))&&m.includes('red'))
-    return {text:'Red VV Hoodie — bold, unisex, XS-3XL. 🔴',products:[p[5]],qr:['Kids hoodie','See tees','How to order']};
-  // Specific: kids hoodie
-  if((m.includes('hoodie')||m.includes('kid')||m.includes('child'))&&(m.includes('kid')||m.includes('child')||m.includes('navy')))
-    return {text:'Kids Navy Hoodie — ages 4-14. Great for the little ones! 👦',products:[p[4]],qr:['See tees','Red hoodie','More products']};
-  // Washed sweatshirt
-  if(m.includes('sweat')||m.includes('washed')||m.includes('grey')||m.includes('gray'))
-    return {text:'Washed Stack Sweatshirt — limited stock, grab it fast! ⚡',products:[p[3]],qr:['Add to cart','See hoodies','See tees']};
-  // All hoodies
-  if(m.includes('hoodie')||m.includes('hood'))
-    return {text:'Here are our hoodies 🧥',products:[p[3],p[4],p[5]],qr:['Red hoodie','Kids hoodie','See tees']};
-  // Neon tee
-  if((m.includes('tee')||m.includes('shirt'))&&(m.includes('neon')||m.includes('logo')))
-    return {text:'VV Neon Logo Tee — statement piece. 🔥',products:[p[2]],qr:['Add to cart','Other tees','See hoodies']};
-  // Stack tee
-  if((m.includes('tee')||m.includes('shirt'))&&(m.includes('stack')||m.includes('repeat')||m.includes('white')))
-    return {text:'Repeat Stack Tee — clean white oversized print. 🤍',products:[p[1]],qr:['Add to cart','Other tees','See bags']};
-  // Long sleeve
-  if((m.includes('tee')||m.includes('shirt')||m.includes('long')||m.includes('sleeve'))&&(m.includes('long')||m.includes('sleeve')))
-    return {text:'VV Signature Long Sleeve — the classic. ⚫',products:[p[0]],qr:['Add to cart','Other tees','See hoodies']};
-  // All tees
-  if(m.includes('tee')||m.includes('tshirt')||m.includes('t-shirt')||m.includes('shirt'))
-    return {text:'Here are our tees 👕',products:[p[0],p[1],p[2]],qr:['Long sleeve','Neon tee','See hoodies']};
-  // Tote bag
-  if(m.includes('bag')||m.includes('tote'))
-    return {text:'Glow Tote Bag — reflective VV logo, glows in the dark. 🛍️',products:[p[6]],qr:['Add to cart','See caps','See tees']};
-  // Cap
-  if(m.includes('cap')||m.includes('hat')||m.includes('trucker'))
-    return {text:'Vala Trucker Cap — embroidered logo, adjustable fit. 🧢',products:[p[7]],qr:['Add to cart','See tote bag','See tees']};
-  // Bestsellers
-  if(m.includes('best')||m.includes('popular')||m.includes('top'))
-    return {text:'Our bestsellers 🔥',products:[p[0],p[7],p[6]],qr:['See all tees','See hoodies','How to order']};
-  // Cheapest
-  if(m.includes('cheap')||m.includes('affordable')||m.includes('price')||m.includes('cost'))
-    return {text:'Best value picks 💰',products:[p[7],p[6],p[1]],qr:['See all products','How to order','See hoodies']};
-  // All bags & caps
-  if(m.includes('bag')||m.includes('accessor'))
-    return {text:'Bags and caps 👜',products:[p[6],p[7]],qr:['Glow tote','Trucker cap','See tees']};
-  // Show everything
-  if(m.includes('all')||m.includes('everything')||m.includes('product'))
-    return {text:'Here is everything we have 👇',products:p,qr:['See tees','See hoodies','How to order']};
-  // Sizing
-  if(m.includes('size')||m.includes('sizing')||m.includes('fit'))
-    return {text:'Tees and hoodies: XS to 3XL. Bags: one size. Kids hoodie: ages 4-14. Size up for oversized. 👌',products:null,qr:['Shop tees','Shop hoodies','How to order']};
-  // Order
-  if(m.includes('order')||m.includes('buy')||m.includes('pay')||m.includes('whatsapp')||m.includes('checkout'))
-    return {text:'Add items to cart, then tap Order via WhatsApp — your full order goes straight to us and we arrange delivery! 📲',products:null,qr:['Shop now','See products','Delivery info']};
-  // Delivery
-  if(m.includes('deliver')||m.includes('ship'))
-    return {text:'We deliver nationwide in Malawi. 1-3 business days. 🛵',products:null,qr:['How to order','See products','Contact us']};
-  // Gift
-  if(m.includes('gift')||m.includes('present'))
-    return {text:'Best gifts 🎁',products:[p[7],p[6],p[5]],qr:['See tees','See hoodies','How to order']};
-  // Care
-  if(m.includes('wash')||m.includes('care')||m.includes('clean'))
-    return {text:'Machine wash cold, hang dry. No tumble dry on printed items 👍',products:null,qr:['Shop now','Sizing info','How to order']};
-  // Default
-  return {text:'Hey! What are you looking for? 😊',products:null,qr:['Show me tees','Show me hoodies','Bags and caps','How to order']};
+  var m = msg.toLowerCase();
+
+  function byCategory(cat) { return products.filter(p => p.category === cat); }
+  function byName(keyword) { return products.filter(p => p.name.toLowerCase().includes(keyword)); }
+
+  if (m.includes('hoodie') && m.includes('red'))
+    return { text: 'Red VV Hoodie — bold, unisex, XS-3XL. 🔴', products: byName('red'), qr: ['Kids hoodie', 'See tees', 'How to order'] };
+  if (m.includes('kid') || m.includes('navy'))
+    return { text: 'Kids Navy Hoodie — ages 4-14. 👦', products: byName('kid').concat(byName('navy')), qr: ['See tees', 'Red hoodie'] };
+  if (m.includes('sweat') || m.includes('washed'))
+    return { text: 'Washed Stack Sweatshirt — limited stock! ⚡', products: byName('washed').concat(byName('sweat')), qr: ['See hoodies', 'See tees'] };
+  if (m.includes('hoodie') || m.includes('hood'))
+    return { text: 'Here are our hoodies 🧥', products: byCategory('hoodie'), qr: ['Red hoodie', 'Kids hoodie', 'See tees'] };
+  if ((m.includes('tee') || m.includes('shirt')) && m.includes('neon'))
+    return { text: 'VV Neon Logo Tee — statement piece. 🔥', products: byName('neon'), qr: ['Other tees', 'See hoodies'] };
+  if (m.includes('tee') || m.includes('tshirt') || m.includes('t-shirt') || m.includes('shirt'))
+    return { text: 'Here are our tees 👕', products: byCategory('tshirt'), qr: ['See hoodies', 'See bags'] };
+  if (m.includes('tote') || m.includes('bag'))
+    return { text: 'Glow Tote Bag — reflective logo. 🛍️', products: byName('tote').concat(byCategory('bag')), qr: ['See caps', 'See tees'] };
+  if (m.includes('cap') || m.includes('hat') || m.includes('trucker'))
+    return { text: 'Vala Trucker Cap — adjustable fit. 🧢', products: byName('cap').concat(byName('trucker')), qr: ['See bags', 'See tees'] };
+  if (m.includes('best') || m.includes('popular'))
+    return { text: 'Our bestsellers 🔥', products: products.slice(0, 3), qr: ['See all tees', 'How to order'] };
+  if (m.includes('all') || m.includes('everything') || m.includes('product'))
+    return { text: 'Everything we have 👇', products: products, qr: ['See tees', 'See hoodies', 'How to order'] };
+  if (m.includes('size') || m.includes('fit'))
+    return { text: 'Tees and hoodies: XS to 3XL. Bags: one size. Kids hoodie: ages 4-14. 👌', products: null, qr: ['Shop tees', 'Shop hoodies', 'How to order'] };
+  if (m.includes('order') || m.includes('buy') || m.includes('pay') || m.includes('whatsapp'))
+    return { text: 'Add items to cart, then tap Order via WhatsApp! 📲', products: null, qr: ['Shop now', 'See products'] };
+  if (m.includes('deliver') || m.includes('ship'))
+    return { text: 'We deliver nationwide in Malawi. 1-3 business days. 🛵', products: null, qr: ['How to order', 'See products'] };
+  if (m.includes('gift'))
+    return { text: 'Best gifts 🎁', products: products.slice(0, 3), qr: ['See tees', 'See hoodies', 'How to order'] };
+
+  return { text: 'Hey! What are you looking for? 😊', products: null, qr: ['Show me tees', 'Show me hoodies', 'Bags and caps', 'How to order'] };
 }
 function toggleChat(){
   chatOpen=!chatOpen;
@@ -779,14 +753,14 @@ function addMsg(role,text,prods){
   if(prods&&prods.length){
     html+='<div class="chat-products">';
     prods.forEach(function(p){
-      html+='<div class="chat-product-card" onclick="addToCart('+p.id+')">'
-        +'<img src="data:image/jpeg;base64,'+IMGS[p.img]+'" alt="'+p.name+'">'
-        +'<div class="chat-product-card-info">'
-        +'<div class="chat-product-card-name">'+p.name+'</div>'
-        +'<div class="chat-product-card-price">MWK '+p.price.toLocaleString()+'</div>'
-        +'</div>'
-        +'<button class="chat-product-card-btn">Add +</button>'
-        +'</div>';
+       html += '<div class="chat-product-card" onclick="addToCart(' + p.id + ')">'
+    + '<img src="' + p.image + '" alt="' + p.name + '">'
+    + '<div class="chat-product-card-info">'
+    + '<div class="chat-product-card-name">' + p.name + '</div>'
+    + '<div class="chat-product-card-price">MWK ' + p.price.toLocaleString() + '</div>'
+    + '</div>'
+    + '<button class="chat-product-card-btn">Add +</button>'
+    + '</div>';
     });
     html+='</div>';
   }
