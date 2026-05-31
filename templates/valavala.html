@@ -556,7 +556,7 @@ function renderProducts(filter='all'){
     <div class="product-card" onclick="addToCart(${p.id})">
       ${p.badge?`<span class="product-badge">${p.badge}</span>`:''}
       <div class="product-img-wrap">
-       <img class="prod-img" src="/media/${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.background='#1e1b18'">
+        <img class="prod-img" src="${p.image}" alt="${p.name}" loading="lazy">
         <div class="product-overlay"><button class="product-add-btn">Add to Cart</button></div>
       </div>
       <div class="product-info">
