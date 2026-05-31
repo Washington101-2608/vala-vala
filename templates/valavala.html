@@ -632,7 +632,7 @@ function checkoutWhatsApp(){
   const total=cart.reduce((s,c)=>s+c.price*c.qty,0);
   const lines=cart.map(c=>`• ${c.qty}x ${c.name} — MWK ${(c.price*c.qty).toLocaleString()}`).join('\n');
   const msg=encodeURIComponent(`Hello Vala Vala! 👋\n\nI'd like to order:\n\n${lines}\n\n*Total: MWK ${total.toLocaleString()}*\n\nPlease confirm availability and delivery details. Thank you! 🙏`);
-  window.open(`https://wa.me/265999000000?text=${msg}`,'_blank');
+  window.open(`https://wa.me/265896907972?text=${msg}`,'_blank');
 }
 
 function showToast(name){
