@@ -9,6 +9,6 @@ urlpatterns = [
     path('api/products/<int:prod_id>/',views.UpdateProduct.as_view(),name='update_product'),
     path('api/dashboard/',views.Dashboard,name='dashboard'),
     path('api/login/',views.LoginView.as_view(),name='login'),
-    path("api/product/dashboard",views.DasbboardView.as_view,name='api_dashboard')
+    path("api/product/dashboard",views.DasbboardView.as_view,name='api_dashboard'),
 path('api/debug/', views.DebugView.as_view(), name='debug'),
 ]
