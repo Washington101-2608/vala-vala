@@ -150,3 +150,11 @@ class UpdateProduct(APIView):
 
     def post(self, request, *args, **kwargs):
         pass
+
+    class DebugView(APIView):
+        def get(self, request):
+            p = Product.objects.first()
+            return Response({
+                'image_field': str(p.image),
+                'image_url': p.image.url if p.image else None,
+            })
