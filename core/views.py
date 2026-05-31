@@ -8,6 +8,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -57,7 +58,7 @@ class ProductHandler(APIView):
             serializer = ProductSerializer(
                 queryset,
                 many=True,
-                context={'request': request}
+                context={'request': request}  # ← FIXED
             )
             return Response({
                 'data': serializer.data,
@@ -72,9 +73,10 @@ class ProductHandler(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
+            print(request.data)
             serializer = ProductSerializer(
                 data=request.data,
-                context={'request': request}
+                context={'request': request}  # ← FIXED
             )
             if serializer.is_valid():
                 serializer.save()
@@ -104,7 +106,7 @@ class DasbboardView(APIView):
             serializer = ProductSerializer(
                 queryset,
                 many=True,
-                context={'request': request}
+                context={'request': request}  # ← FIXED
             )
             return Response({
                 'data': serializer.data,
@@ -119,42 +121,36 @@ class DasbboardView(APIView):
 
 
 class UpdateProduct(APIView):
-    parser_classes = [MultiPartParser, FormParser]
 
     def patch(self, request, prod_id, *args, **kwargs):
         try:
+            print(request.data)
             product = Product.objects.get(id=prod_id)
+            if not product:
+                return Response({
+                    'detail': 'Product was not found. Perhaps it was deleted'
+                })
+            product.name = request.data.get("name")
+            product.badge = request.data.get('badge')
+            product.category = request.data.get('category')
+            product.desc = request.data.get('desc')
+
+            product.save()
             serializer = ProductSerializer(
                 product,
-                data=request.data,
-                partial=True,
-                context={'request': request}
+                context={'request': request}  # ← FIXED
             )
-            if serializer.is_valid():
-                serializer.save()
-                return Response({
-                    'product': serializer.data,
-                    'success': True
-                }, status=status.HTTP_200_OK)
             return Response({
-                'detail': serializer.errors,
-                'success': False
-            }, status=status.HTTP_400_BAD_REQUEST)
+                'product': serializer.data,
+                'success': True
+            }, status=status.HTTP_200_OK)
 
         except Exception as exp:
             print(exp)
             return Response({
                 'detail': str(exp),
-                'success': False
+                'success': False,
             }, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
         pass
-
-    class DebugView(APIView):
-        def get(self, request):
-            p = Product.objects.first()
-            return Response({
-                'image_field': str(p.image),
-                'image_url': p.image.url if p.image else None,
-            })
