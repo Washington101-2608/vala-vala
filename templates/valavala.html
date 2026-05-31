@@ -561,7 +561,8 @@ function renderProducts(filter='all'){
       </div>
       <div class="product-info">
         <p class="product-category">${p.category==='tshirt'?'T-Shirt':p.category==='hoodie'?'Hoodie':'Bag / Cap'}</p>
-        <p class="product-name">${p.name}</p>
+       <p class="product-name">${p.name}</p>
+        ${p.desc ? `<p style="font-size:11px;color:var(--mid-gray);margin-bottom:6px;line-height:1.5;">${p.desc}</p>` : ''}
         <p class="product-price">MWK ${p.price.toLocaleString()}</p>
       </div>
     </div>
