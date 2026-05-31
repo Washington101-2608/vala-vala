@@ -10,35 +10,11 @@ from django.contrib.auth import authenticate,login
 from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
 
-class RegisterView(APIView):
-    def post(self, request, *args, **kwargs):
-        try:
-            username = request.data.get('username')
-            password = request.data.get('password')
-
-            if not username or not password:
-                return Response({'detail': 'Username and password are required', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
-
-            if User.objects.filter(username=username).exists():
-                return Response({'detail': 'Username already exists', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
-
-            user = User.objects.create_user(username=username, password=password)
-            login(request, user)
-            return Response({'detail': 'Account created!', 'success': True, 'url': 'api/dashboard/'}, status=status.HTTP_201_CREATED)
-
-        except Exception as exp:
-            return Response({'detail': str(exp), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
 @ensure_csrf_cookie
 def Index(request):
     return render(request,template_name = 'valavala.html')
-@ensure_csrf_cookie
-def Index(request):
-    from core.models import Product
-    products = Product.objects.all()[:3]
-    return render(request, template_name='valavala.html', context={'hero_products': products})
 
 
 @login_required
