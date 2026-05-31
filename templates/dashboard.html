@@ -61,7 +61,6 @@
       align-items:center;
       margin-bottom:30px;
     }
-
     .btn{
       padding:14px 28px;
       border:none;
@@ -84,10 +83,7 @@
       background:#555;
       color:white;
     }
-    .btn-secondary:hover{
-      background:#666;
-    }
-
+    .btn-secondary:hover{background:#666;}
     table{
       width:100%;
       border-collapse:collapse;
@@ -112,8 +108,6 @@
       object-fit:cover;
       border-radius:4px;
     }
-
-    /* FIXED MODAL */
     .modal{
       position:fixed;
       inset:0;
@@ -152,9 +146,7 @@
       display:flex;
       gap:15px;
     }
-    .form-group{
-      margin-bottom:20px;
-    }
+    .form-group{margin-bottom:20px;}
     label{
       display:block;
       margin-bottom:8px;
@@ -188,7 +180,6 @@
 </head>
 <body>
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="logo">VALA<span>.</span>VALA</div>
     <a href="#" class="nav-link active">Products</a>
@@ -197,13 +188,11 @@
     <a href="#" class="nav-link">Analytics</a>
   </div>
 
-  <!-- MAIN CONTENT -->
   <div class="main-content">
     <div class="header">
       <h1 style="font-family:Bebas Neue,sans-serif;font-size:42px;letter-spacing:-1px;">Products Management</h1>
       <button class="btn btn-primary" onclick="showAddModal()">+ Add New Product</button>
     </div>
-
     <table id="productsTable">
       <thead>
         <tr>
@@ -219,17 +208,14 @@
     </table>
   </div>
 
-  <!-- PRODUCT MODAL -->
   <div class="modal" id="productModal">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="modalTitle" style="color:var(--accent);">Add New Product</h2>
       </div>
-      
       <div class="modal-body">
         <form id="productForm" enctype="multipart/form-data">
           <input type="hidden" id="productId">
-
           <div class="form-group">
             <label>Product Image</label>
             <div class="image-upload" id="uploadArea">
@@ -238,12 +224,10 @@
               <img id="previewImage" src="" alt="">
             </div>
           </div>
-
           <div class="form-group">
             <label>Name</label>
             <input type="text" id="name" required>
           </div>
-
           <div class="form-group">
             <label>Category</label>
             <select id="category" required>
@@ -252,211 +236,178 @@
               <option value="bag">Bag / Cap</option>
             </select>
           </div>
-
           <div class="form-group">
             <label>Price (MWK)</label>
             <input type="number" id="price" step="0.01" required>
           </div>
-
           <div class="form-group">
             <label>Badge (optional)</label>
             <input type="text" id="badge" placeholder="Bestseller, New, Limited...">
           </div>
-
           <div class="form-group">
             <label>Description</label>
             <textarea id="desc" rows="3" required></textarea>
           </div>
         </form>
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" style="flex:1;" onclick="saveProduct()" id='saveProduct'>Save Product</button>
+        <button type="button" class="btn btn-primary" style="flex:1;" onclick="saveProduct()" id="saveProduct">Save Product</button>
       </div>
     </div>
   </div>
 
 <script>
-// ================== CONFIG ==================
-    function getCSRFToken(name){
-        let cookieValue = null;
-        if(document.cookie && document.cookie !==''){
-            const cookies = document.cookie.split(';');
-            for(let i =0 ; i < cookies.length; i++){
-                const cookie = cookies[i].trim()
-                if(cookie.substring(0,name.length +1)===(name + '=')){
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
-                    break
-                }
-            }
-        } return cookieValue;
+  function getCSRFToken(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
 
+  const API_BASE = '/api/products/';
+  let products = [];
+  let selectedFile = null;
+
+  async function fetchProducts() {
+    try {
+      const res = await fetch(API_BASE);
+      const data = await res.json();
+      if (data.success) {
+        products = data.data;
+        renderTable();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = products.map(p => `
+      <tr>
+        <td><img src="${p.image}" alt="${p.name}"></td>
+        <td>${p.name}</td>
+        <td>${p.category}</td>
+        <td><strong>${parseFloat(p.price).toLocaleString()}</strong></td>
+        <td>${p.badge ? `<span style="background:#c8a96e;color:black;padding:4px 10px;border-radius:12px;">${p.badge}</span>` : '-'}</td>
+        <td>
+          <button class="btn btn-primary" style="padding:6px 14px;font-size:13px;" onclick="editProduct(${p.id})">Edit</button>
+          <button class="btn btn-secondary" style="padding:6px 14px;font-size:13px;" onclick="deleteProduct(${p.id})">Delete</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('imageInput').click());
+
+  document.getElementById('imageInput').addEventListener('change', (e) => {
+    selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = ev => document.getElementById('previewImage').src = ev.target.result;
+      reader.readAsDataURL(selectedFile);
+    }
+  });
+
+  function showAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add New Product';
+    document.getElementById('productForm').reset();
+    document.getElementById('previewImage').src = '';
+    document.getElementById('productId').value = '';
+    selectedFile = null;
+    document.getElementById('productModal').style.display = 'flex';
+  }
+
+  function editProduct(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('modalTitle').textContent = 'Edit Product';
+    document.getElementById('productId').value = p.id;
+    document.getElementById('name').value = p.name;
+    document.getElementById('category').value = p.category;
+    document.getElementById('price').value = p.price;
+    document.getElementById('badge').value = p.badge || '';
+    document.getElementById('desc').value = p.desc;
+    document.getElementById('previewImage').src = p.image;
+    selectedFile = null;
+    document.getElementById('productModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('productModal').style.display = 'none';
+  }
+
+  async function saveProduct() {
+    const SaveBtn = document.getElementById('saveProduct');
+    SaveBtn.disabled = true;
+    SaveBtn.innerHTML = 'Saving...';
+
+    const id = document.getElementById('productId').value;
+    const formData = new FormData();
+    formData.append('name', document.getElementById('name').value);
+    formData.append('category', document.getElementById('category').value);
+    formData.append('price', document.getElementById('price').value);
+    formData.append('badge', document.getElementById('badge').value || '');
+    formData.append('desc', document.getElementById('desc').value);
+
+    if (selectedFile) {
+      formData.append('image', selectedFile);
     }
 
+    const url = id ? `/api/update/${id}/` : API_BASE;
+    const method = id ? 'PATCH' : 'POST';
 
-const API_BASE = '/api/products/';
+    try {
+      const res = await fetch(url, {
+        method: method,
+        headers: { 'X-CSRFToken': getCSRFToken('csrftoken') },
+        body: formData
+      });
 
-let products = [];
-let selectedFile = null;
+      const data = await res.json();
 
-async function fetchProducts() {
-  try {
-    const res = await fetch(API_BASE);
-    data = await res.json();
-    if(data.success){
-      products.splice(0,0,...data.data);
-      renderTable();
+      if (data.success) {
+        closeModal();
+        await fetchProducts();  // refresh table
+        alert(id ? 'Product updated!' : 'Product added successfully!');
+      } else {
+        alert('Failed to save');
+        console.log(data);
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert('Connection error');
+    } finally {
+      SaveBtn.disabled = false;
+      SaveBtn.innerHTML = 'Save Product';
     }
-    
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-function renderTable() {
-  const tbody = document.getElementById('tableBody');
-  tbody.innerHTML = products.map(p => `
-    <tr>
-      <td><img src="${p.image}" alt="${p.name}"></td>
-      <td>${p.name}</td>
-      <td>${p.category}</td>
-      <td><strong>${parseFloat(p.price).toLocaleString()}</strong></td>
-      <td>${p.badge ? `<span style="background:#c8a96e;color:black;padding:4px 10px;border-radius:12px;">${p.badge}</span>` : '-'}</td>
-      <td>
-        <button class="btn btn-primary" style="padding:6px 14px;font-size:13px;" onclick="editProduct(${p.id})">Edit</button>
-        <button class="btn btn-secondary" style="padding:6px 14px;font-size:13px;" onclick="deleteProduct(${p.id})">Delete</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-// Image Upload
-document.getElementById('uploadArea').addEventListener('click', () => document.getElementById('imageInput').click());
-
-document.getElementById('imageInput').addEventListener('change', (e) => {
-  selectedFile = e.target.files[0];
-  if (selectedFile) {
-    const reader = new FileReader();
-    reader.onload = ev => document.getElementById('previewImage').src = ev.target.result;
-    reader.readAsDataURL(selectedFile);
-  }
-});
-
-function showAddModal() {
-  document.getElementById('modalTitle').textContent = 'Add New Product';
-  document.getElementById('productForm').reset();
-  document.getElementById('previewImage').src = '';
-  document.getElementById('productId').value = '';
-  selectedFile = null;
-  document.getElementById('productModal').style.display = 'flex';
-}
-
-function editProduct(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  document.getElementById('modalTitle').textContent = 'Edit Product';
-  document.getElementById('productId').value = p.id;
-  document.getElementById('name').value = p.name;
-  document.getElementById('category').value = p.category;
-  document.getElementById('price').value = p.price;
-  document.getElementById('badge').value = p.badge || '';
-  document.getElementById('desc').value = p.desc;
-  document.getElementById('previewImage').src = p.image;
-  selectedFile = null;
-  document.getElementById('productModal').style.display = 'flex';
-}
-
-function closeModal() {
-  document.getElementById('productModal').style.display = 'none';
-}
-
-// Save Product
-async function saveProduct() {
-
-  const SaveBtn = document.getElementById('saveProduct');
-
-  SaveBtn.disabled = true;
-  SaveBtn.innerHTML = 'Saving.......';
-
-  const id = document.getElementById('productId').value;
-
-  let name = document.getElementById('name').value;
-  let category = document.getElementById('category').value;
-  let price = document.getElementById('price').value;
-  let badge = document.getElementById('badge').value || '';
-  let desc = document.getElementById('desc').value;
-
-  const formData = new FormData();
-
-  formData.append('name', name);
-  formData.append('category', category);
-  formData.append('price', price);
-  formData.append('badge', badge);
-  formData.append('desc', desc);
-
-  if (selectedFile){
-    formData.append('image', selectedFile);
   }
 
-  const url = id ? `${API_BASE}${id}/` : API_BASE;
-  const method = id ? 'PATCH' : 'POST';
-
-  try {
-
-    const res = await fetch(url,{
-      method: method,
-      headers:{
-        'X-CSRFToken': getCSRFToken('csrftoken')
-      },
-      body: formData
-    });
-
-    const data = await res.json();
-
-    if (data.success){
-
-      console.log(data);
-
-      closeModal();
-
-      //fetchProducts();
-
-      alert(id ? 'Product updated!' : 'Product added successfully!');
-
-    } else {
-
-      alert('Failed to save');
-      console.log(data)
-
+  async function deleteProduct(id) {
+    if (confirm('Delete this product?')) {
+      await fetch(`${API_BASE}${id}/`, {
+        method: 'DELETE',
+        headers: { 'X-CSRFToken': getCSRFToken('csrftoken') }
+      });
+      await fetchProducts();
     }
-
-  } catch (err){
-
-    console.error(err);
-
-    alert('Connection error');
-
-  } finally {
-
-    SaveBtn.disabled = false;
-
-    SaveBtn.innerHTML = 'Save Product';
-
   }
-}
-async function deleteProduct(id) {
-  if (confirm('Delete this product?')) {
-    await fetch(`${API_BASE}${id}/`, { method: 'DELETE' });
-    fetchProducts();
-  }
-}
 
-document.getElementById('ordersBtn').addEventListener('click', () => {
-  alert("Orders management coming soon!");
-});
+  document.getElementById('ordersBtn').addEventListener('click', () => {
+    alert("Orders management coming soon!");
+  });
 
-fetchProducts();
+  fetchProducts();
 </script>
 </body>
 </html>
