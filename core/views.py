@@ -53,6 +53,13 @@ class LoginView(APIView):
 class ProductHandler(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
+    def get(self, request, *args, **kwargs):
+        try:
+            queryset = Product.objects.all()
+            serializer = ProductSerializer(queryset, many=True, context={'request': request})
+            return Response({'data': serializer.data, 'success': True}, status=status.HTTP_200_OK)
+        except Exception as exp:
+            return Response({'detail': str(exp), 'success': False}, status=status.HTTP_200_OK)
 
     def get(self,request,*args, **kwargs):
         try:
