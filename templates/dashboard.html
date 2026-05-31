@@ -363,7 +363,7 @@
       formData.append('image', selectedFile);
     }
 
-    const url = id ? `/api/update/${id}/` : API_BASE;
+    const url = id ? `/api/products/${id}/` : API_BASE;
     const method = id ? 'PATCH' : 'POST';
 
     try {
