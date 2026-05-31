@@ -535,6 +535,12 @@ async function FetchProducts(){
     const data = await response.json();
     if(data.success){
       products.splice(0,0,...data.data);
+      // Fix double media path
+products.forEach(p => {
+    if (p.image && p.image.includes('/media/media/')) {
+        p.image = p.image.replace('/media/media/', '/media/');
+    }
+});
       renderProducts();
     }
     else{
