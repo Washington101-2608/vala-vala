@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn vala.wsgi:application
+web: gunicorn vala.wsgi --bind 0.0.0.0:$PORT
